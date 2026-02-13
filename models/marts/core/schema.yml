@@ -3,6 +3,7 @@ version: 2
 models:
 
   - name: dim_airports
+    description: "Dimension table containing all airports, with their name, city, country, and geographical coordinates."
     columns:
       - name: airport_id
         tests:
@@ -22,6 +23,7 @@ models:
               max_value: 180    
 
   - name: dim_airlines
+    description: "Dimension table containing all airlines, with their name and country of origin."
     columns:
       - name: airline_id
         tests:
@@ -31,6 +33,7 @@ models:
               column_type: integer
 
   - name: fct_routes
+    description: "Fact table containing all flight routes, with source and destination airports, and whether the route is direct or not."
     columns:
 
       - name: source_airport_id

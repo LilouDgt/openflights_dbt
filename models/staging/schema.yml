@@ -1,0 +1,30 @@
+version: 2
+
+models:
+
+  - name: stg_airlines
+    columns:
+      - name: airline_id
+        tests:
+          - unique
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              column_type: integer
+
+  - name: stg_airports
+    columns:
+      - name: airport_id
+        tests:
+          - unique
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              column_type: integer
+
+  - name: stg_countries
+    description: "Staging table containing all countries, with their name and ISO code."
+
+  - name: st_planes
+    description: "Staging table containing all planes, with their name and IATA code."
+
+  - name: stg_routes
+    description: "Staging table containing all flight routes, with source and destination airports, and whether the route is direct or not."

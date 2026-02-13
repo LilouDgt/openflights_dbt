@@ -8,3 +8,4 @@ seeds:
   openflights_dbt:
     +quote_columns: false
     +delimiter: ";"
+    

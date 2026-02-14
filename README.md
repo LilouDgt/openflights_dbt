@@ -1,6 +1,6 @@
 # ✈️ OpenFlights Analytics Project
 
-I created this project to show a full-cycle analytics engineering workflow using **dbt** and **DuckDB**. I transformed raw data from the OpenFlights dataset into a clean, tested, and documented star schema ready for analysis.
+I created this project to work on a full-cycle analytics engineering workflow using **dbt**. I retrieved and transformed raw data from the OpenFlights dataset into a clean, tested, and documented star schema ready for analysis.
 
 ## 🎯 Project Objective
 My goal is to build a data pipeline that handles common real-world data issues (missing values, type mismatches, and orphan records) and provides a dashboard for flight route analytics.

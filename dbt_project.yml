@@ -4,8 +4,37 @@ config-version: 2
 
 profile: 'openflights_dbt'
 
+# model-paths, seed-paths, etc. (standard defaults)
+model-paths: ["models"]
+seed-paths: ["seeds"]
+test-paths: ["tests"]
+analysis-paths: ["analyses"]
+macro-paths: ["macros"]
+
+models:
+  openflights_dbt:
+    # Staging Layer: 
+    staging:
+      +materialized: view
+      +schema: staging
+      +tags: ["hourly"]
+
+    # Intermediate Layer: 
+    intermediate:
+      +materialized: view
+      +schema: intermediate
+
+    # Marts Layer:
+    marts:
+      +materialized: table
+      +schema: core
+      +tags: ["daily"]
+
+# 2. Your existing Seed configuration
 seeds:
   openflights_dbt:
     +quote_columns: false
     +delimiter: ";"
-    
+    +column_types:
+      iata: varchar(3)
+      icao: varchar(4)

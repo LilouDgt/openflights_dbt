@@ -1,61 +1,38 @@
-# ✈️ OpenFlights End-to-End Analytics Project
+# ✈️ OpenFlights Data Pipeline
 
-This project demonstrates a full-cycle analytics engineering workflow using **dbt** and **DuckDB**. I transformed raw aviation data from the OpenFlights dataset into a clean, tested, and documented star schema ready for analysis.
+This project is a modern analytics engineering pipeline that transforms raw OpenFlights data into a clean, star-schema model ready for BI.
 
-## 🎯 Project Objective
-To build a robust data pipeline that handles common real-world data issues (missing values, type mismatches, and orphan records) and provides a "source of truth" for flight route analytics.
+I built this to demonstrate a full Architecture using dbt, DuckDB, and GitHub Actions.
 
-## 🛠️ Tech Stack
-- **Data Engine:** [DuckDB](https://duckdb.org/) (Fast, local analytical database)
-- **Transformation:** [dbt-core](https://www.getdbt.com/)
-- **Testing:** dbt-tests & [dbt-expectations](https://github.com/calogica/dbt-expectations)
-- **Language:** SQL & Python (Pandas for initial exploration)
 
 ## 🏗️ Data Architecture
+The project is structured into three distinct layers to ensure data reliability and clear lineage:
 
-### 1. Staging Layer (`stg_`)
-* Initial cleanup of raw CSV data.
-* Used `TRY_CAST` and `CASE` statements to handle legacy null strings like `\N`.
-* Standardized naming conventions across all sources.
+### 1. Staging Layer (`stg_`): Raw CSV ingestion. 
+This layer handles the "ugly" parts of the OpenFlights data, such as converting \N strings to actual SQL NULLs and casting IDs to proper integers.
 
-### 2. Marts Layer (`dim_` & `fct_`)
-* **dim_airports**: Master list of airports with validated latitude/longitude coordinates.
-* **dim_airlines**: Verified list of active airlines.
-* **fct_routes**: A centralized fact table connecting routes to airports and airlines. I utilized **Inner Joins** to ensure strict referential integrity.
+### 2. Intermediate (`int_`): This is where the heavy lifting happens. 
+I join routes with airports and airlines and handle "Ghost Airports" (routes that point to airport IDs not present in the master airport list).
 
-## 🧩 Challenges & Solutions
+### 3. Marts Layer (`dim_` & `fct_`): The final Gold layer.
+- Surrogate Keys: I used dbt_utils.generate_surrogate_key to create persistent, hashed IDs for airports, airlines, and routes.
+- Feature Engineering: Added business logic like airport_category (Global Hub vs. Regional) and hemisphere classification.
 
-### 🛑 The `\N` String Problem
-**Issue:** The source data used the literal string `\N` to represent null values, causing calculation and join errors.  
-**Solution:** Implemented `try_cast(column as integer)` logic in the staging layer to safely convert these strings into true SQL `NULL` values.
+## 🧩 Data Lineage
+Below is the dbt-generated DAG (Directed Acyclic Graph) highlighting the Medallion architecture and the dependencies between our staging, intermediate, and marts layers. 
 
-### 🔗 Referential Integrity
-**Issue:** Several thousand routes referenced airport IDs that did not exist in the airports master list.  
-**Solution:** Used dbt `relationships` tests to identify orphans and applied filtering in the Marts layer to ensure only valid, traceable routes are included in the final data.
+![Lineage Graph](assets/lineage_graph.png)
 
-## 🧪 Data Quality Tests
-I implemented a multi-layered testing strategy:
-- **Schema Tests:** `unique` and `not_null` on primary keys.
-- **Relationship Tests:** Ensured every route maps to a valid airport and airline.
-- **Value Constraints:** Used `dbt-expectations` to ensure:
-  - Latitude is between `-90` and `90`.
-  - Longitude is between `-180` and `180`.
-  - Column types are strictly enforced as `integers`.
+## 🚦 Data Quality Tests
+This project implements a rigorous testing suite:
+- Referential Integrity: Every route in fct_routes is tested to ensure it points to a valid airline and airport.
+- Value Constraints: Latitude/Longitude are validated to stay within global bounds (-90/90 and -180/180).
+- Custom Severity: Non-critical fields (like aircraft IATA codes) are set to warn, while primary keys are set to error to block the pipeline if duplicates appear.
 
-## dbt Documentation
+## 🚀 CI/CD Pipeline
+Every time code is pushed to this repo, a GitHub Action triggers a CI job.
+It spins up a fresh environment, installs the dependencies, loads the seeds, and runs dbt build --select models/staging. This ensures that any change I make doesn't break the foundation of the project.
 
-This project includes full dbt model and column documentation.
 
-To explore lineage and metadata:
 
-```
-dbt docs generate
-dbt docs serve
-```
 
-This opens an interactive documentation site with:
-
-* model descriptions
-* column definitions
-* data tests
-* lineage graph

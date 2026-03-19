@@ -1,0 +1,104 @@
+version: 2
+
+models:
+  - name: dim_airports
+    description: "Master list of airports with their codes and geolocation."
+    columns:
+      - name: airport_key
+        description: "Hashed surrogate key (airport_id + iata_code) used for joins."
+        tests:
+          - unique
+          - not_null
+      - name: airport_id
+        description: "Original unique airport ID."
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              arguments:
+                column_type: integer
+      - name: latitude
+        description: "Decimal latitude (-90 to 90)."
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: -90
+                max_value: 90
+      - name: longitude
+        description: "Decimal longitude (-180 to 180)."
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: -180
+                max_value: 180    
+
+  - name: dim_airlines
+    description: "Master list of airlines, their codes, and operational status."
+    columns:
+      - name: airline_key
+        description: "Hashed surrogate key for the airline."
+        tests:
+          - unique
+          - not_null
+      - name: airline_id
+        tests:
+          - not_null:
+              config:
+                severity: warn
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              arguments:
+                column_type: integer
+      - name: is_active
+        description: "Boolean flag: true if the airline is currently operating."
+        tests:
+          - accepted_values:
+              arguments:
+                values: [true, false]
+
+  - name: fct_routes
+    description: "Fact table recording flight paths between airports."
+    columns:
+      - name: route_key
+        description: "Unique hash of the route (airline + source + dest + equipment)."
+        tests:
+          - unique
+          - not_null
+      - name: airline_id
+        description: "Foreign key to dim_airlines."
+        tests:
+          - not_null:
+              config:
+                severity: warn
+          - relationships:
+              arguments:
+                to: ref('dim_airlines')
+                field: airline_id
+      - name: source_airport_id
+        description: "Foreign key to the origin airport in dim_airports."
+        tests:
+          - not_null:
+              config:
+                severity: warn
+          - relationships:
+              arguments:
+                to: ref('dim_airports')
+                field: airport_id
+              config:
+                severity: warn
+      - name: destination_airport_id
+        description: "Foreign key to the arrival airport in dim_airports."
+        tests:
+          - not_null:
+              config:
+                severity: warn
+          - relationships:
+              arguments:
+                to: ref('dim_airports')
+                field: airport_id
+              config:
+                severity: warn
+      - name: is_codeshare
+        description: "True if the flight is operated by a partner airline."
+        tests:
+          - accepted_values:
+              arguments:
+                values: [true, false]

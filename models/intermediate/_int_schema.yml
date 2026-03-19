@@ -1,0 +1,28 @@
+version: 2
+
+models:
+  - name: int_routes_details
+    description: "Enriched routes with airport and airline names."
+    tests:
+      # test: ensure the row count didn't explode during joins
+      - dbt_utils.equal_rowcount:
+          arguments:
+            compare_model: ref('stg_routes')
+    columns:
+      - name: airline_id
+        tests:
+          - relationships:
+              arguments:
+                to: ref('stg_airlines')
+                field: airline_id
+              config:
+                severity: warn
+
+  - name: int_ghost_airports
+    description: "List of airports that appear in routes but are missing from the main airport table."
+    columns:
+      - name: airport_id
+        tests:
+          - not_null:
+              config:
+                severity: warn

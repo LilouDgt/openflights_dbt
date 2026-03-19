@@ -1,0 +1,78 @@
+version: 2
+
+models:
+  - name: stg_airlines
+    description: "Cleaned list of global airlines."
+    columns:
+      - name: airline_id
+        description: "Primary key. Unique ID for the airline."
+        tests:
+          - unique
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              arguments:
+                column_type: integer
+      - name: is_active
+        description: "Boolean flag indicating if the airline is still operating."
+        tests:
+          - accepted_values:
+              arguments:
+                values: [true, false]
+
+  - name: stg_airports
+    description: "Global airports including IATA/ICAO codes and coordinates."
+    columns:
+      - name: airport_id
+        description: "Primary key. Unique ID for the airport."
+        tests:
+          - unique
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              arguments:
+                column_type: integer
+      - name: iata_code
+        description: "3-letter IATA code. May be NULL if not assigned."
+        tests:
+          - dbt_expectations.expect_column_value_lengths_to_equal:
+              arguments:
+                value: 3
+                config:
+                  severity: warn 
+
+  - name: stg_routes
+    description: "Flight route mapping between source and destination airports."
+    columns:
+      - name: source_airport_id
+        description: "Foreign key to stg_airports."
+        tests:
+          - not_null:
+              config:
+                severity: warn
+          - relationships:
+              arguments:
+                to: ref('stg_airports')
+                field: airport_id
+              config:
+                severity: warn
+      - name: destination_airport_id
+        description: "Foreign key to stg_airports."
+        tests:
+          - not_null:
+              config:
+                severity: warn  
+          - relationships:
+              arguments:
+                to: ref('stg_airports')
+                field: airport_id
+              config:
+                severity: warn
+
+  - name: stg_planes
+    description: "Cleaned aircraft equipment data."
+    columns:
+      - name: iata_code
+        tests:
+          - not_null:
+              config:
+                severity: warn
+         

@@ -1,5 +1,7 @@
 packages:
-  - package: calogica/dbt_expectations
-    version: [">=0.10.0", "<0.11.0"]
+  - package: metaplane/dbt_expectations
+    version: 0.10.10  # Upgraded version
   - package: dbt-labs/dbt_utils
-    version: [">=0.8.0", "<0.9.0"]  
+    version: 1.3.3
+  - package: godatadriven/dbt_date  # Switched from calogica
+    version: 0.10.1

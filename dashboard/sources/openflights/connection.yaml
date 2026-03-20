@@ -1,0 +1,6 @@
+name: openflights
+type: duckdb
+options:
+    filename: ../../../openflights.duckdb
+    lock: false
+    schema: main

@@ -35,7 +35,8 @@ final as (
         case 
             when r.outgoing_routes_count > 100 then 'Global Hub'
             when r.outgoing_routes_count > 50 then 'Major Regional'
-            when r.outgoing_routes_count > 0 then 'Small Commercial'
+            when r.outgoing_routes_count > 10 then 'Secondary Commercial'
+            when r.outgoing_routes_count > 0 then 'Local Airfield'
             else 'Private/Inactive'
         end as airport_category,
 

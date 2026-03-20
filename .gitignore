@@ -15,3 +15,7 @@ __pycache__/
 # OS
 .DS_Store
 dbt_internal_packages/
+
+# DB
+*.duckdb
+*.duckdb.wal

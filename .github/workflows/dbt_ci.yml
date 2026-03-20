@@ -27,5 +27,5 @@ jobs:
       - name: Run dbt Seed
         run: dbt seed
 
-      - name: Run and Test Staging Layer
-        run: dbt build --select models/staging
+      - name: Run and Test dbt Models
+        run: dbt build 

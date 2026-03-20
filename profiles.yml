@@ -1,0 +1,8 @@
+openflights_dbt:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: openflights.duckdb
+      threads: 4
+

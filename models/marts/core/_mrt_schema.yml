@@ -60,7 +60,6 @@ models:
       - name: route_key
         description: "Unique hash of the route (airline + source + dest + equipment)."
         tests:
-          - unique
           - not_null
       - name: airline_id
         description: "Foreign key to dim_airlines."

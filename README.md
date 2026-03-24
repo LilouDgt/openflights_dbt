@@ -34,5 +34,30 @@ Every time code is pushed to this repo, a GitHub Action triggers a CI job.
 It spins up a fresh environment, installs the dependencies, loads the seeds, and runs dbt build --select models/staging. This ensures that any change I make doesn't break the foundation of the project.
 
 
+## 📊 Business Intelligence & Visualization
+The pipeline is paired with an interactive dashboard built with [Evidence](https://evidence.dev), a code-based BI tool that uses SQL and Markdown to generate a static analytics site directly from the DuckDB output.
+
+|  | |
+| :---: | :---: |
+| ![Dashboard](assets/dashboard-preview-1.png) | ![Lineage](assets/dashboard-preview-2.png) |
+
+### Features
+- Filterable by country via a multi-select dropdown
+- KPI cards for total routes, active airlines, international and domestic counts
+- Bar chart of airport distribution by category
+- Bubble map of the top 20 airports by route volume
+- Top 10 airports and airlines side by side
+- Gateway analysis table ranking airports by their international connectivity ratio
+ 
+### Running locally
+```bash
+cd dashboard
+npm install
+npm run dev
+```
+Then open [http://localhost:3000](http://localhost:3000).
+
+### 📄 Executive Report
+For a static summary of the global hub analysis, you can download the **[Executive Summary PDF](./assets/openflight-report.pdf)**.
 
 

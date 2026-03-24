@@ -18,6 +18,8 @@ final as (
         airline_name,
         source_airport_id,
         destination_airport_id,
+        source_airport_name,
+        source_country as country_of_origin,
         
         -- Measures
         stop_count,
